@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;;
 
 /**
  *
@@ -22,12 +24,20 @@ public class Bouncer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+    @Min(0)
+    @Max(F_WIDTH)
     private int x;
-    
+    @Min(0)
+    @Max(F_HEIGHT)
     private int y;
     
     private int yVelocity;
+
+    //const values
+    public static final int GRAVITY_ACCEL = 1;
+    public static final int DECAY_RATE = 1;
+    public static final int F_WIDTH = 600;
+    public static final int F_HEIGHT = 600;
 
     public Long getId() {
         return id;
@@ -61,7 +71,35 @@ public class Bouncer implements Serializable {
         this.yVelocity = yVelocity;
     }
     
-    
+    /** 
+     * method to handle the move of the bouncer
+     */
+    public void advanceOneFrame() {
+        //defensive program to make sure the bouncer is in the proper possion
+        //TODO:implement this in JSF instead of here
+        if (y < 0) {
+            y = 0;
+        } else if (y > F_HEIGHT) {
+            y = F_HEIGHT;
+            yVelocity = 0; //the bouncer is placed on the bottom wall
+        }
+
+        //apply GRAVITY_ACCEL to yV if Bouncer is at the bottom line.
+        if (y < F_HEIGHT) {
+            yVelocity += GRAVITY_ACCEL;
+        }
+
+        //advances its y by its yVelocity (pixels per frame) in each frame
+        y += yVelocity;
+        
+        //check if bounced on the top or bottom lines.
+        if ((y == 0 && yVelocity != 0) || (y == F_HEIGHT && yVelocity != 0)) {
+            yVelocity -= (yVelocity > 0) ? DECAY_RATE : -DECAY_RATE;
+            yVelocity = -yVelocity;
+        }
+    }
+
+
     
     @Override
     public int hashCode() {
