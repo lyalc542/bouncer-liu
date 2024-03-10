@@ -16,9 +16,11 @@
             <h:form>
                 <h:panelGrid columns="2">
                     <h:outputLabel value="#{bundle.CreateBouncerLabel_x}" for="x" />
-                    <h:inputText id="x" value="#{bouncerController.selected.x}" title="#{bundle.CreateBouncerTitle_x}" />
+                    <h:inputText id="x" value="#{bouncerController.selected.x}" title="#{bundle.CreateBouncerTitle_x}" >
+                        <f:validateLongRange minimum ="0" maximum="600"/>  </h:inputText>
                     <h:outputLabel value="#{bundle.CreateBouncerLabel_y}" for="y" />
-                    <h:inputText id="y" value="#{bouncerController.selected.y}" title="#{bundle.CreateBouncerTitle_y}" />
+                    <h:inputText id="y" value="#{bouncerController.selected.y}" title="#{bundle.CreateBouncerTitle_y}" >
+                        <f:validateLongRange minimum ="0" maximum="600"/>  </h:inputText>
                     <h:outputLabel value="#{bundle.CreateBouncerLabel_yVelocity}" for="yVelocity" />
                     <h:inputText id="yVelocity" value="#{bouncerController.selected.yVelocity}" title="#{bundle.CreateBouncerTitle_yVelocity}" />
                 </h:panelGrid>
