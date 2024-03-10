@@ -39,6 +39,8 @@ public class Bouncer implements Serializable {
     public static final int F_WIDTH = 600;
     public static final int F_HEIGHT = 600;
 
+    public Bouncer(){}
+
     public Long getId() {
         return id;
     }
@@ -98,8 +100,6 @@ public class Bouncer implements Serializable {
             yVelocity = -yVelocity;
         }
     }
-
-
     
     @Override
     public int hashCode() {
