@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,7 +33,7 @@ public class Bouncer implements Serializable {
     @Min(0)
     @Max(F_HEIGHT)
     private int y;
-    
+  
     private int yVelocity;
 
     //const values
@@ -40,6 +41,9 @@ public class Bouncer implements Serializable {
     public static final int DECAY_RATE = 1;
     public static final int F_WIDTH = 600;
     public static final int F_HEIGHT = 600;
+    public static final int X_DEFAULT = 100;
+    public static final int Y_DEFAULT = 100;
+    public static final int YV_DEFAULT = 10;
 
     public Bouncer(){}
 
@@ -51,15 +55,15 @@ public class Bouncer implements Serializable {
         this.id = id;
     }
 
-    public int getX() {
+    public Integer getX() {
         return x;
     }
 
-    public int getY() {
+    public Integer getY() {
         return y;
     }
 
-    public int getyVelocity() {
+    public Integer getyVelocity() {
         return yVelocity;
     }
 
@@ -95,6 +99,34 @@ public class Bouncer implements Serializable {
         if (y > F_HEIGHT) {
             y = F_HEIGHT;
             yVelocity = -yVelocity + DECAY_RATE;
+        }
+    }
+    
+    public void update(Bouncer entity) {
+        if (entity.getX() != null) {
+            this.x = entity.x;
+        }
+        if (entity.getY() != null) {
+            this.y = entity.y;
+        }
+        if (entity.getyVelocity() != null) {
+            this.yVelocity = entity.yVelocity;
+        }
+    }
+    
+    public void setDefaultValues() {
+        Integer x = this.x;
+        Integer y = this.y;
+        Integer yV = this.yVelocity;
+        
+        if (x != null) {
+            this.x = X_DEFAULT;
+        }
+        if (y != null) {
+            this.y = Y_DEFAULT;
+        }
+        if (yV != null) {
+            this.yVelocity = YV_DEFAULT;
         }
     }
     

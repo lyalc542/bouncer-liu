@@ -55,6 +55,26 @@ public class BouncerFacadeREST extends AbstractFacade<Bouncer> {
     public Response countREST() {
         return Response.ok(super.count()).build();
     }
+
+    @POST
+    @Path("{id}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response updateBouncer(@PathParam("id") Long id, Bouncer entity) {
+        if (entity.getId() != null && !id.equals(entity.getId())) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Mismatched ID in request").build();
+        }
+
+        Bouncer existingBouncer = getEntityManager().find(Bouncer.class, id);
+        if (existingBouncer == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Bouncer with ID " + id + " not found.").build();
+        }
+
+        existingBouncer.update(entity);
+        super.edit(existingBouncer);
+        return Response.ok(existingBouncer).build();
+    }
+    
+    
     
     @POST
     @Override
