@@ -5,7 +5,7 @@
  */
 package service;
 
-import cst8218.chang.bouncer.liu.Bouncer;
+import cst8218.chang.bouncer.liu.entity.Bouncer;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

@@ -5,6 +5,7 @@
  */
 package cst8218.chang.bouncer.liu;
 
+import cst8218.chang.bouncer.liu.entity.Bouncer;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

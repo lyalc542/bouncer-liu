@@ -1,5 +1,7 @@
-package cst8218.chang.bouncer.liu;
+package cst8218.chang.bouncer.liu.presentation;
 
+import cst8218.chang.bouncer.liu.BouncerFacade;
+import cst8218.chang.bouncer.liu.entity.Bouncer;
 import cst8218.chang.bouncer.liu.util.JsfUtil;
 import cst8218.chang.bouncer.liu.util.PaginationHelper;
 

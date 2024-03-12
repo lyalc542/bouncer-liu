@@ -5,6 +5,7 @@
  */
 package cst8218.chang.bouncer.liu;
 
+import cst8218.chang.bouncer.liu.entity.Bouncer;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
