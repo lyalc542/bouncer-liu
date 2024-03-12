@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -34,7 +35,27 @@ public class BouncerFacadeREST extends AbstractFacade<Bouncer> {
     public BouncerFacadeREST() {
         super(Bouncer.class);
     }
+    
+    @POST
+    @Path("create")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response createBouncer(Bouncer entity) {
+        if (entity.getId() != null) {
+            // Id is not null, it's a bad request.
+            return Response.status(Response.Status.BAD_REQUEST).entity("Id must be null for creation").build();
+        }
+        
+        super.create(entity);
+        return Response.status(Response.Status.CREATED).entity(entity).build();
+    }
 
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response countREST() {
+        return Response.ok(super.count()).build();
+    }
+    
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -76,12 +97,7 @@ public class BouncerFacadeREST extends AbstractFacade<Bouncer> {
         return super.findRange(new int[]{from, to});
     }
 
-    @GET
-    @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
-    }
+
 
     @Override
     protected EntityManager getEntityManager() {
