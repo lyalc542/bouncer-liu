@@ -28,13 +28,14 @@ public class Bouncer implements Serializable {
     private Long id;
     @Min(0)
     @Max(F_WIDTH)
-    private int x;
+    private Integer x;
     @Min(0)
     @Max(F_HEIGHT)
-    private int y;
+    private Integer y;
   
-    private int yVelocity;
-
+    private Integer yVelocity;
+    
+    
     //const values
     public static final int GRAVITY_ACCEL = 1;
     public static final int DECAY_RATE = 1;
@@ -66,15 +67,15 @@ public class Bouncer implements Serializable {
         return yVelocity;
     }
 
-    public void setX(int x) {
+    public void setX(Integer x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(Integer y) {
         this.y = y;
     }
 
-    public void setyVelocity(int yVelocity) {
+    public void setyVelocity(Integer yVelocity) {
         this.yVelocity = yVelocity;
     }
     
@@ -113,19 +114,25 @@ public class Bouncer implements Serializable {
         }
     }
     
-    public void setDefaultValues() {
-        Integer x = this.x;
-        Integer y = this.y;
-        Integer yV = this.yVelocity;
-        
-        if (x != null) {
-            this.x = X_DEFAULT;
+
+    public void replace(Bouncer newBouncer) {
+        if (newBouncer.getX() != null) {
+            this.setX(newBouncer.getX());
+        } else {
+            System.out.println("X is null");
+            this.setX(100);
         }
-        if (y != null) {
-            this.y = Y_DEFAULT;
+
+        if (newBouncer.getY() != null) {
+            this.setY(newBouncer.getY());
+        } else {
+            this.setY(100);
         }
-        if (yV != null) {
-            this.yVelocity = YV_DEFAULT;
+
+        if (newBouncer.getyVelocity()!= null) {
+            this.setyVelocity(newBouncer.getyVelocity());
+        } else {
+            this.setyVelocity(10);
         }
     }
     

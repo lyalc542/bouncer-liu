@@ -59,6 +59,7 @@ public class BouncerFacadeREST extends AbstractFacade<Bouncer> {
     @POST
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateBouncer(@PathParam("id") Long id, Bouncer entity) {
         if (entity.getId() != null && !id.equals(entity.getId())) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Mismatched ID in request").build();
@@ -74,7 +75,42 @@ public class BouncerFacadeREST extends AbstractFacade<Bouncer> {
         return Response.ok(existingBouncer).build();
     }
     
+    @PUT
+    @Path("{id}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response replaceBouncer(@PathParam("id") Long id, Bouncer newBouncer) {
+        System.out.println("running replaceBouncer ");
+        Bouncer existingBouncer = super.find(id);
+
+        // If the Bouncer with the given ID doesn't exist, return a NOT_FOUND response
+        if (existingBouncer == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Bouncer with ID " + id + " not found")
+                    .build();
+        }
+
+        // If the ID of the newBouncer doesn't match the ID in the URL path, return a BAD_REQUEST response
+        if (newBouncer.getId() != null && !newBouncer.getId().equals(existingBouncer.getId())) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ID in request body does not match URL")
+                    .build();
+        }
+
+        existingBouncer.replace(newBouncer);
+
+        // Return a 200 status with the replaced Bouncer in the response body
+        return Response.status(Response.Status.OK)
+                .entity(existingBouncer)
+                .build();
+    }
+
     
+    @PUT
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response editBouncer(Bouncer entity) {
+        return Response.status(Response.Status.METHOD_NOT_ALLOWED).build();
+    }
     
     @POST
     @Override
