@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cst8218.chang.bouncer.liu.entity;
 
 import java.io.Serializable;
@@ -15,7 +10,7 @@ import javax.validation.constraints.Min;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * Bouncer DTO. 
  * @author liuch
  */
 @Entity
@@ -23,16 +18,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Bouncer implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    //auto generated ID field using JPA
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    //limit x and y within the range of 0 to Frame width and height, 600
     @Min(0)
     @Max(F_WIDTH)
     private Integer x;
     @Min(0)
     @Max(F_HEIGHT)
     private Integer y;
-  
+    
     private Integer yVelocity;
     
     
@@ -46,11 +43,12 @@ public class Bouncer implements Serializable {
     public static final int YV_DEFAULT = 10;
 
     public Bouncer(){}
-
+    
+    //Getter and Setter
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
@@ -81,6 +79,8 @@ public class Bouncer implements Serializable {
     
     /** 
      * method to handle the move of the bouncer
+     * when touching the top or bottom line, the bouncer speed will decreae by one
+     * and speed will reverse
      */
     public void advanceOneFrame() {
         //apply GRAVITY_ACCEL to yV if Bouncer is at the bottom line.
@@ -90,7 +90,7 @@ public class Bouncer implements Serializable {
 
         //advances its y by its yVelocity (pixels per frame) in each frame
         y += yVelocity;
-        
+        //if boucned, decreate speed then revers the direction
         if (y < 0) {
             y = 0;
             yVelocity = -yVelocity - DECAY_RATE;
@@ -101,8 +101,8 @@ public class Bouncer implements Serializable {
             yVelocity = -yVelocity + DECAY_RATE;
         }
     }
-    
-    public void update(Bouncer entity) {
+    //called by rest layer to set the update non-null attributes of the entity selected in DB
+    public void setVariable(Bouncer entity) {
         if (entity.getX() != null) {
             this.x = entity.x;
         }
@@ -114,28 +114,28 @@ public class Bouncer implements Serializable {
         }
     }
     
-
-    public void replace(Bouncer newBouncer) {
-        if (newBouncer.getX() != null) {
-            this.setX(newBouncer.getX());
+    //called by rest layer to set the whole entity selectd in DB
+    public void setEntity(Bouncer entity) {
+        if (entity.getX() != null) {
+            this.x = entity.getX();
         } else {
-            System.out.println("X is null");
-            this.setX(100);
+            this.x = X_DEFAULT;
+        } 
+
+        if (entity.getY() != null) {
+            this.y = entity.getY();
+        } else {
+            this.y = Y_DEFAULT;
         }
 
-        if (newBouncer.getY() != null) {
-            this.setY(newBouncer.getY());
+        if (entity.getyVelocity() != null) {
+            this.yVelocity = entity.getyVelocity();
         } else {
-            this.setY(100);
-        }
-
-        if (newBouncer.getyVelocity()!= null) {
-            this.setyVelocity(newBouncer.getyVelocity());
-        } else {
-            this.setyVelocity(10);
+            this.yVelocity = YV_DEFAULT;
         }
     }
-    
+
+    //POJO default behavior
     @Override
     public int hashCode() {
         int hash = 0;
@@ -143,6 +143,7 @@ public class Bouncer implements Serializable {
         return hash;
     }
 
+    //POJO default behavior
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -156,6 +157,7 @@ public class Bouncer implements Serializable {
         return true;
     }
 
+    //POJO default behavior
     @Override
     public String toString() {
         return "cst8218.chang.bouncer.liu.Bouncer[ id=" + id + " ]";

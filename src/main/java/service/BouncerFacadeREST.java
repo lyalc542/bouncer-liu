@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package service;
 
 import cst8218.chang.bouncer.liu.entity.Bouncer;
@@ -23,141 +18,169 @@ import javax.ws.rs.core.Response;
 
 /**
  *
- * @author liuch
+ * Rest API layer to handle request from user
  */
 @Stateless
 @Path("cst8218.chang.bouncer.liu.bouncer")
 public class BouncerFacadeREST extends AbstractFacade<Bouncer> {
 
+    //inject persistence unit for JPA and EntityManager 
     @PersistenceContext(unitName = "my_persistence_unit")
     private EntityManager em;
 
+    //non-arg constructor
     public BouncerFacadeREST() {
         super(Bouncer.class);
     }
     
+    //create a new bouncer entity. Takes and produces json and xml foramt. Non-null id will result in BAD_REQUEST
     @POST
-    @Path("create")
+    @Path("createonebouncer")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response createBouncer(Bouncer entity) {
+        //If id is not null, it's a bad request.
         if (entity.getId() != null) {
-            // Id is not null, it's a bad request.
-            return Response.status(Response.Status.BAD_REQUEST).entity("Id must be null for creation").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("You can't specify the bouncer id!").build();
         }
         
         super.create(entity);
+         //Return a 201 status with the create Bouncer
         return Response.status(Response.Status.CREATED).entity(entity).build();
     }
 
+    //Returns the total cound number of bouncer entities from the DB
     @GET
-    @Path("count")
+    @Path("getcountnum")
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response countREST() {
         return Response.ok(super.count()).build();
     }
 
+    //Update existing Bouncer entity attribute from non-null attibutes in request by given id. 
     @POST
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response updateBouncer(@PathParam("id") Long id, Bouncer entity) {
+    public Response updateBouncerAttribute(@PathParam("id") Long id, Bouncer entity) {
+        //Check if the ID in the Bouncer body is non-null and does not match the path ID
         if (entity.getId() != null && !id.equals(entity.getId())) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Mismatched ID in request").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Url and body id Mismatching! Which entity are u trying to edit?").build();
         }
 
         Bouncer existingBouncer = getEntityManager().find(Bouncer.class, id);
+
         if (existingBouncer == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Bouncer with ID " + id + " not found.").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Bouncer with ID:  " + id + " not found.").build();
         }
 
-        existingBouncer.update(entity);
+        existingBouncer.setVariable(entity);
         super.edit(existingBouncer);
+        //Return a 200 status with the updated Bouncer
         return Response.ok(existingBouncer).build();
     }
     
+    //Update the existing Bouncer entity with a given id
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response replaceBouncer(@PathParam("id") Long id, Bouncer newBouncer) {
-        System.out.println("running replaceBouncer ");
-        Bouncer existingBouncer = super.find(id);
+    public Response updateBouncerEntity(@PathParam("id") Long id, Bouncer entity) {
+        //Check if the ID in the Bouncer body is non-null and does not match the path ID
+        if (entity.getId() != null && !id.equals(entity.getId())) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Url and body id Mismatching! Which entity are u trying to edit?").build();
+        }
+        
+        Bouncer existingBouncer = getEntityManager().find(Bouncer.class, id);
 
-        // If the Bouncer with the given ID doesn't exist, return a NOT_FOUND response
+        //Check if the specified Bouncer exists in DB, return a NOT_FOUND response if not
         if (existingBouncer == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Bouncer with ID " + id + " not found")
-                    .build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Bouncer with ID " + id + " not found").build();
         }
 
-        // If the ID of the newBouncer doesn't match the ID in the URL path, return a BAD_REQUEST response
-        if (newBouncer.getId() != null && !newBouncer.getId().equals(existingBouncer.getId())) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ID in request body does not match URL")
-                    .build();
-        }
+        //Call method to update the entity with non-null values and default values
+        existingBouncer.setEntity(entity);
 
-        existingBouncer.replace(newBouncer);
-
-        // Return a 200 status with the replaced Bouncer in the response body
-        return Response.status(Response.Status.OK)
-                .entity(existingBouncer)
-                .build();
+        //Return a 200 status with the updated Bouncer
+        return Response.ok(existingBouncer).build();
     }
 
-    
+    //PUT on the root resource (bouncer table) is not allowed
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response editBouncer(Bouncer entity) {
         return Response.status(Response.Status.METHOD_NOT_ALLOWED).build();
     }
     
-    @POST
-    @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Bouncer entity) {
-        super.create(entity);
-    }
-
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Bouncer entity) {
-        super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
-    }
-
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Bouncer find(@PathParam("id") Long id) {
-        return super.find(id);
-    }
-
+    //Auto generated by Netbeans
+    //Get all bouncers in DB for troubleshooting
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Bouncer> findAll() {
         return super.findAll();
     }
+    
+    //Get bouncer by id for troubleshooting
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response getById(@PathParam("id") Long id) {
+       //Check for not found
+        if(super.find(id) == null){
+            return Response.status(Response.Status.NOT_FOUND).entity("Bouncer with ID: " + id + " not found.").build();
+        }
+        
+        return Response.ok(super.find(id)).build();
+    }
 
+    //Get the EntityManager instance to update bouncer with JPA
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+
+
+    //endpoints disabled!!!
+    //Create bouncer entity disabled
+    @POST
+    @Override
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void create(Bouncer entity) {
+        throw new UnsupportedOperationException("Not impled");
+
+    }
+
+    //Create bouncer entity disabled
+    @PUT
+    @Path("{id}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void edit(@PathParam("id") Long id, Bouncer entity) {
+        throw new UnsupportedOperationException("Not impled");
+
+    }
+
+    //Create bouncer entity disabled
+    @DELETE
+    @Path("{id}")
+    public void remove(@PathParam("id") Long id) {
+        throw new UnsupportedOperationException("Not impled");
+    }
+
+    //Get bouncer by id disabled
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Bouncer find(@PathParam("id") Long id) {
+        throw new UnsupportedOperationException("Not impled");
+    }
+
+    //Get bouncer by id range disabled
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Bouncer> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+        throw new UnsupportedOperationException("Not impled");
     }
     
 }

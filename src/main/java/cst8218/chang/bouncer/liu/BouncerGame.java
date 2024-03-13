@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cst8218.chang.bouncer.liu;
 
 import cst8218.chang.bouncer.liu.entity.Bouncer;
@@ -13,8 +8,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
 /**
- *
- * @author liuch
+ * Singleton bean that starts at application startup and runs a background task to update bouncers.
  */
 @Startup
 @Singleton
@@ -28,11 +22,12 @@ public class BouncerGame {
     
     public BouncerGame(){}
     
-    
+    //Accessor for the BouncerFacade bean.
     private BouncerFacade getFacade() {
         return bouncerFacade;
     }
     
+    //Initializes and starts the background thread for game logic upon bean's construction.
     @PostConstruct
     public void go() {
         new Thread(new Runnable() {
